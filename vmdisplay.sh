@@ -11,6 +11,20 @@ function DEFAULT_RES(){
     xrandr --newmode $NAME $(cvt 1920 1080 60 | grep Modeline | cut -d' ' -f3-) 2>/dev/null
     xrandr --addmode Virtual1 $NAME 2>/dev/null
     xrandr --output Virtual1 --mode $NAME 2>/dev/null
+
+    read -p "Do you want these changes to persist? " PERSISTENCE
+    if [[ $PERSISTENCE == y || $PERSISTENCE == Y || $PERSISTENCE == Yes || $PERSISTENCE == yes || $PERSISTENCE == YES ]]; then
+        sudo bash -c "cat <<EOF >>/etc/X11/xorg.conf.d/10-monitor.conf
+Section "Monitor"
+    Identifier "Virtual1"
+    Modeline $NAME $(cvt 1920 1080 60 | grep Modeline | cut -d' ' -f3-)
+EndSection
+EOF"
+
+        cat <<EOF >>$HOME/.profile
+xrandr --output Virtual1 --mode $NAME
+EOF
+    fi
 }
 
 # Function for the custom resolution builder
@@ -27,6 +41,20 @@ function CUSTOM_RES(){
     xrandr --newmode $NAME $(cvt $RESOLUTION $REFRESH | grep Modeline | cut -d' ' -f3- ) 2>/dev/null
     xrandr --addmode Virtual1 $NAME 2>/dev/null
     xrandr --output Virtual1 --mode $NAME 2>/dev/null
+
+    read -p "Do you want these changes to persist? " PERSISTENCE
+    if [[ $PERSISTENCE == y || $PERSISTENCE == Y || $PERSISTENCE == Yes || $PERSISTENCE == yes || $PERSISTENCE == YES ]]; then
+        sudo bash -c "cat <<EOF >>/etc/X11/xorg.conf.d/10-monitor.conf
+Section "Monitor"
+    Identifier "Virtual1"
+    Modeline $NAME $(cvt $RESOLUTION $REFRESH | grep Modeline | cut -d' ' -f3- )
+EndSection
+EOF"
+
+        cat <<EOF >>$HOME/.profile
+xrandr --output Virtual1 --mode $NAME
+EOF
+    fi
 }
 
 # Main case statement
